@@ -5,4 +5,5 @@
 *.log
 coverage/
 artifacts/
-quality-report.json
+/quality-report.json
+/quality.json

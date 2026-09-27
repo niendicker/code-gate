@@ -1,3 +1,5 @@
+mod collect;
+
 use std::{fs, path::PathBuf, process::ExitCode};
 
 use anyhow::{Context, Result};
@@ -23,12 +25,22 @@ enum Command {
         path: PathBuf,
     },
 
+    /// Run the collectors enabled in the policy and write a quality report.
+    Collect {
+        /// Policy file; its directory is the project that gets analyzed.
+        #[arg(long, default_value = "quality.toml")]
+        config: PathBuf,
+
+        #[arg(long, default_value = "quality.json")]
+        output: PathBuf,
+    },
+
     /// Evaluate a canonical quality report against a policy.
     Check {
         #[arg(long, default_value = "quality.toml")]
         config: PathBuf,
 
-        #[arg(long, default_value = "quality-report.json")]
+        #[arg(long, default_value = "quality.json")]
         report: PathBuf,
     },
 
@@ -49,6 +61,7 @@ fn main() -> ExitCode {
 fn run() -> Result<ExitCode> {
     match Cli::parse().command {
         Command::Init { path } => init(path),
+        Command::Collect { config, output } => collect::collect(config, output),
         Command::Check { config, report } => check(config, report),
         Command::Version => {
             println!("code-gate {}", env!("CARGO_PKG_VERSION"));

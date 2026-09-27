@@ -94,6 +94,21 @@ Examples:
 - a forbidden dependency edge;
 - a Clippy diagnostic retained for audit.
 
+## Implemented metrics
+
+| Metric | Unit | Source | Scope | Collector |
+|---|---|---|---|---|
+| `code.clippy.total` | count | clippy | project | clippy |
+| `code.clippy.warnings` | count | clippy | project | clippy |
+| `code.clippy.errors` | count | clippy | project | clippy |
+| `code.compiler.warnings` | count | rustc | project | clippy |
+| `code.compiler.errors` | count | rustc | project | clippy |
+
+A diagnostic is a Clippy one when its lint code starts with `clippy::`;
+everything else rustc reports during the run is a compiler diagnostic.
+Diagnostics are deduplicated because Cargo repeats them once per target that
+compiles the same file. See [ADR-0002](adr/0002-clippy-collector.md).
+
 ## Stability
 
 Metric names become API once adopted.

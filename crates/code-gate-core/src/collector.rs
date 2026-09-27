@@ -31,4 +31,7 @@ pub enum CollectorError {
 
     #[error("collector output could not be parsed: {0}")]
     Parse(String),
+
+    #[error("collector is not implemented yet: {0}")]
+    NotImplemented(String),
 }

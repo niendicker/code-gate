@@ -104,8 +104,13 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "code-gate-collector-audit",
+ "code-gate-collector-bca",
+ "code-gate-collector-clippy",
+ "code-gate-collector-llvm-cov",
  "code-gate-config",
  "code-gate-core",
+ "code-gate-process",
  "code-gate-report",
 ]
 
@@ -128,6 +133,9 @@ name = "code-gate-collector-clippy"
 version = "0.1.0"
 dependencies = [
  "code-gate-core",
+ "code-gate-process",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -152,6 +160,13 @@ name = "code-gate-core"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "code-gate-process"
+version = "0.1.0"
+dependencies = [
  "thiserror",
 ]
 

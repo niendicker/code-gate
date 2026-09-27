@@ -1,0 +1,39 @@
+{
+  "project": {
+    "name": "example-ems",
+    "commit": "8ab29df",
+    "branch": "main"
+  },
+  "metrics": [
+    {
+      "id": "test.coverage.lines",
+      "value": 96.4,
+      "unit": "percent",
+      "source": "cargo-llvm-cov",
+      "scope": "core"
+    },
+    {
+      "id": "code.clippy.warnings",
+      "value": 0.0,
+      "unit": "count",
+      "source": "clippy",
+      "scope": "core"
+    },
+    {
+      "id": "unsafe.blocks",
+      "value": 0.0,
+      "unit": "count",
+      "source": "cargo-geiger",
+      "scope": "core"
+    },
+    {
+      "id": "security.vulnerabilities.critical",
+      "value": 0.0,
+      "unit": "count",
+      "source": "cargo-audit",
+      "scope": "project"
+    }
+  ],
+  "findings": [],
+  "gates": []
+}

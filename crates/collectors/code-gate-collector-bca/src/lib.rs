@@ -9,7 +9,7 @@ impl Collector for BcaCollector {
     }
 
     fn collect(&self, _context: &CollectionContext) -> Result<CollectorOutput, CollectorError> {
-        Err(CollectorError::Execution(
+        Err(CollectorError::NotImplemented(
             "big-code-analysis collector is scaffolded but not wired yet".into(),
         ))
     }

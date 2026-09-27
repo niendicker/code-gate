@@ -1,0 +1,44 @@
+# Code Gate's own policy (dogfooding). Only gates backed by an implemented
+# collector are enforced here.
+[project]
+name = "code-gate"
+default_criticality = "B"
+
+[collectors.clippy]
+enabled = true
+
+[[gates]]
+id = "no-clippy-warnings"
+metric = "code.clippy.warnings"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "no-clippy-errors"
+metric = "code.clippy.errors"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "no-compiler-warnings"
+metric = "code.compiler.warnings"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "no-compiler-errors"
+metric = "code.compiler.errors"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "critical"
+missing = "fail"

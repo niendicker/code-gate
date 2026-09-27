@@ -5,6 +5,7 @@ members = [
     "crates/code-gate-config",
     "crates/code-gate-report",
     "crates/code-gate-cli",
+    "crates/code-gate-process",
     "crates/collectors/code-gate-collector-clippy",
     "crates/collectors/code-gate-collector-bca",
     "crates/collectors/code-gate-collector-llvm-cov",

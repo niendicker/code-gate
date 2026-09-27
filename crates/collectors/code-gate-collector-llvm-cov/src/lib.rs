@@ -9,7 +9,7 @@ impl Collector for LlvmCovCollector {
     }
 
     fn collect(&self, _context: &CollectionContext) -> Result<CollectorOutput, CollectorError> {
-        Err(CollectorError::Execution(
+        Err(CollectorError::NotImplemented(
             "cargo-llvm-cov collector is scaffolded but not wired yet".into(),
         ))
     }

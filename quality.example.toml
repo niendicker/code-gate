@@ -2,9 +2,32 @@
 name = "example"
 default_criticality = "B"
 
+# Collectors run by `code-gate collect`. Only Clippy is implemented so far;
+# enabling a scaffolded collector makes `collect` fail explicitly.
+[collectors.clippy]
+enabled = true
+
+[collectors.llvm_cov]
+enabled = false
+
+[collectors.audit]
+enabled = false
+
+[collectors.bca]
+enabled = false
+
 [[gates]]
-id = "clippy-warnings"
+id = "no-clippy-warnings"
 metric = "code.clippy.warnings"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "no-compiler-errors"
+metric = "code.compiler.errors"
 scope = "project"
 operator = "lte"
 threshold = 0.0

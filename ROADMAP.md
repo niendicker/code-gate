@@ -17,7 +17,7 @@ The roadmap is intentionally incremental. Code Gate should become useful before 
 - [x] `check` command over canonical reports
 - [x] collector contract
 - [x] collector crate scaffolds
-- [ ] wire Clippy collector
+- [x] wire Clippy collector
 - [ ] wire `bca` collector
 - [ ] wire `cargo-llvm-cov` collector
 - [ ] wire `cargo-audit` collector

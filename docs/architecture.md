@@ -17,6 +17,7 @@ The core must never require a specific analyzer.
 collectors ───────► core
 config ───────────► core
 report ───────────► core
+collectors ───────► process        (external tool runner)
 cli ──────────────► core + config + report + collectors
 
 core ─X─► collectors
@@ -93,6 +94,27 @@ collector failed to execute   -> runtime/tooling error
 metric missing                -> policy decides fail/warn/ignore
 metric violates threshold     -> quality gate failure
 ```
+
+`CollectorError` distinguishes the tooling cases:
+
+```text
+ToolMissing      analyzer (or cargo) not installed
+Execution        analyzer ran but failed without usable evidence
+Parse            analyzer output could not be interpreted
+NotImplemented   collector is only a scaffold
+```
+
+An analyzer that runs and *finds problems* is a success for the collector:
+Clippy warnings or compile errors become metrics and findings, never a
+`CollectorError`.
+
+## Process execution
+
+Collectors do not call `std::process::Command` directly. They describe an
+`Invocation` (program, arguments, working directory — no shell) and run it
+through the `ToolRunner` trait from `code-gate-process`. Tests substitute a
+fake runner, and parsing is a pure function over captured output, so
+collector behavior is tested against fixtures without running the tool.
 
 This distinction must remain visible in CLI exit codes and machine reports.
 
