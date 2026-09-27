@@ -1,0 +1,39 @@
+[project]
+name = "example-ems"
+default_criticality = "A"
+
+[[gates]]
+id = "core-line-coverage"
+metric = "test.coverage.lines"
+scope = "core"
+operator = "gte"
+threshold = 95.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "core-clippy-warnings"
+metric = "code.clippy.warnings"
+scope = "core"
+operator = "lte"
+threshold = 0.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "core-unsafe-blocks"
+metric = "unsafe.blocks"
+scope = "core"
+operator = "lte"
+threshold = 0.0
+severity = "critical"
+missing = "fail"
+
+[[gates]]
+id = "critical-vulnerabilities"
+metric = "security.vulnerabilities.critical"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "critical"
+missing = "fail"

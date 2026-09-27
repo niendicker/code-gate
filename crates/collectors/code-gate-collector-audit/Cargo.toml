@@ -1,0 +1,10 @@
+[package]
+name = "code-gate-collector-audit"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+code-gate-core = { path = "../../code-gate-core" }

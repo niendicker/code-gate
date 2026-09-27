@@ -1,0 +1,18 @@
+[package]
+name = "code-gate-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "code-gate"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+code-gate-config = { path = "../code-gate-config" }
+code-gate-core = { path = "../code-gate-core" }
+code-gate-report = { path = "../code-gate-report" }

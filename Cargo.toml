@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/code-gate-core",
+    "crates/code-gate-config",
+    "crates/code-gate-report",
+    "crates/code-gate-cli",
+    "crates/collectors/code-gate-collector-clippy",
+    "crates/collectors/code-gate-collector-bca",
+    "crates/collectors/code-gate-collector-llvm-cov",
+    "crates/collectors/code-gate-collector-audit",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/niendicker/code-gate"
+authors = ["Code Gate contributors"]
+
+[workspace.dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+toml = "0.8"

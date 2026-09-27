@@ -1,0 +1,30 @@
+[project]
+name = "example"
+default_criticality = "B"
+
+[[gates]]
+id = "clippy-warnings"
+metric = "code.clippy.warnings"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "line-coverage"
+metric = "test.coverage.lines"
+scope = "project"
+operator = "gte"
+threshold = 80.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "critical-vulnerabilities"
+metric = "security.vulnerabilities.critical"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "critical"
+missing = "fail"

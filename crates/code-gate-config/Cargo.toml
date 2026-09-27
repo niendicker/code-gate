@@ -1,0 +1,13 @@
+[package]
+name = "code-gate-config"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+code-gate-core = { path = "../code-gate-core" }
+serde.workspace = true
+thiserror.workspace = true
+toml.workspace = true

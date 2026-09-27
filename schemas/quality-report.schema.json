@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://code-gate.dev/schemas/quality-report.schema.json",
+  "title": "Code Gate Quality Report",
+  "type": "object",
+  "required": [
+    "project",
+    "metrics",
+    "findings",
+    "gates"
+  ],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "branch": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "value",
+          "unit",
+          "source",
+          "scope"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "count",
+              "percent",
+              "ratio",
+              "score",
+              "milliseconds",
+              "bytes",
+              "none"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "findings": {
+      "type": "array"
+    },
+    "gates": {
+      "type": "array"
+    }
+  }
+}
