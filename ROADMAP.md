@@ -19,7 +19,7 @@ The roadmap is intentionally incremental. Code Gate should become useful before 
 - [x] collector crate scaffolds
 - [x] wire Clippy collector
 - [ ] wire `bca` collector
-- [ ] wire `cargo-llvm-cov` collector
+- [x] wire `cargo-llvm-cov` collector
 - [ ] wire `cargo-audit` collector
 - [ ] integration tests with real tool outputs
 - [ ] lock canonical metric naming conventions

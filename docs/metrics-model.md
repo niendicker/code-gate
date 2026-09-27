@@ -103,11 +103,20 @@ Examples:
 | `code.clippy.errors` | count | clippy | project | clippy |
 | `code.compiler.warnings` | count | rustc | project | clippy |
 | `code.compiler.errors` | count | rustc | project | clippy |
+| `test.coverage.lines` | percent | cargo-llvm-cov | project | llvm_cov |
+| `test.coverage.functions` | percent | cargo-llvm-cov | project | llvm_cov |
+| `test.coverage.regions` | percent | cargo-llvm-cov | project | llvm_cov |
+| `test.coverage.branches` | percent | cargo-llvm-cov | project | llvm_cov |
 
 A diagnostic is a Clippy one when its lint code starts with `clippy::`;
 everything else rustc reports during the run is a compiler diagnostic.
 Diagnostics are deduplicated because Cargo repeats them once per target that
 compiles the same file. See [ADR-0002](adr/0002-clippy-collector.md).
+
+Coverage percentages are `covered / count * 100` over LLVM's project totals.
+A coverage kind with nothing instrumented (typically branches on stable Rust)
+is omitted rather than reported as 0 % or 100 %. See
+[ADR-0003](adr/0003-llvm-cov-collector.md).
 
 ## Stability
 

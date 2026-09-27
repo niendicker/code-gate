@@ -1,0 +1,27 @@
+info: cargo-llvm-cov currently setting cfg(coverage); you can opt-out it by passing --no-cfg-coverage
+   Compiling cov v0.1.0 (/work/cov)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running unittests src/lib.rs (target/llvm-cov-target/debug/deps/cov-c8123aa840257e8b)
+
+running 2 tests
+test tests::t ... ok
+test extra::tests::d ... FAILED
+
+failures:
+
+---- extra::tests::d stdout ----
+
+thread 'extra::tests::d' (282175) panicked at src/extra.rs:9:9:
+assertion `left == right` failed
+  left: 4
+ right: 5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    extra::tests::d
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--lib`
+error: process didn't exit successfully: `/usr/bin/cargo test --tests --manifest-path /work/cov/Cargo.toml --target-dir /work/cov/target/llvm-cov-target --workspace --all-features` (exit status: 101)

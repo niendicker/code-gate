@@ -7,6 +7,9 @@ default_criticality = "B"
 [collectors.clippy]
 enabled = true
 
+[collectors.llvm_cov]
+enabled = true
+
 [[gates]]
 id = "no-clippy-warnings"
 metric = "code.clippy.warnings"
@@ -41,4 +44,15 @@ scope = "project"
 operator = "lte"
 threshold = 0.0
 severity = "critical"
+missing = "fail"
+
+# Ratchet just below the measured baseline (76.6 % on 2026-09-27); raise it as
+# coverage improves.
+[[gates]]
+id = "line-coverage"
+metric = "test.coverage.lines"
+scope = "project"
+operator = "gte"
+threshold = 75.0
+severity = "error"
 missing = "fail"

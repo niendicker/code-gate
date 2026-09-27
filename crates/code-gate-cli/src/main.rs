@@ -108,12 +108,14 @@ fn check(config: PathBuf, report: PathBuf) -> Result<ExitCode> {
 
         let observed = evaluation
             .observed
-            .map(|value| value.to_string())
+            .map(format_value)
             .unwrap_or_else(|| "missing".to_owned());
 
         println!(
             "{status:>4}  {:<36} observed={:<10} threshold={}",
-            evaluation.rule_id, observed, evaluation.threshold
+            evaluation.rule_id,
+            observed,
+            format_value(evaluation.threshold)
         );
     }
 
@@ -125,5 +127,28 @@ fn check(config: PathBuf, report: PathBuf) -> Result<ExitCode> {
     } else {
         println!("QUALITY GATE: PASSED");
         Ok(ExitCode::SUCCESS)
+    }
+}
+
+/// Console rendering of a metric value: at most two decimals, no trailing
+/// zeros. Reports keep full precision.
+fn format_value(value: f64) -> String {
+    let rounded = format!("{value:.2}");
+    rounded
+        .trim_end_matches('0')
+        .trim_end_matches('.')
+        .to_owned()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::format_value;
+
+    #[test]
+    fn formats_values_compactly() {
+        assert_eq!(format_value(0.0), "0");
+        assert_eq!(format_value(75.0), "75");
+        assert_eq!(format_value(76.66232073011734), "76.66");
+        assert_eq!(format_value(80.5), "80.5");
     }
 }

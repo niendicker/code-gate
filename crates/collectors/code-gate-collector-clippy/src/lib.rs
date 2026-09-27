@@ -81,7 +81,7 @@ pub fn interpret(output: &ToolOutput) -> Result<ClippyRun, CollectorError> {
     let run = parse_clippy_output(stdout)
         .map_err(|error| CollectorError::Parse(format!("cargo clippy JSON output, {error}")))?;
 
-    let stderr = stderr_tail(&output.stderr);
+    let stderr = output.stderr_tail(STDERR_TAIL_LINES);
 
     match run.build_success {
         None if clippy_missing(&stderr) => Err(CollectorError::ToolMissing(format!(
@@ -89,7 +89,7 @@ pub fn interpret(output: &ToolOutput) -> Result<ClippyRun, CollectorError> {
         ))),
         None => Err(CollectorError::Execution(format!(
             "cargo clippy exited with {} without finishing the build: {stderr}",
-            exit_description(output.exit_code)
+            output.exit_description()
         ))),
         Some(false)
             if run.count(Origin::Clippy, Level::Error) == 0
@@ -106,23 +106,4 @@ pub fn interpret(output: &ToolOutput) -> Result<ClippyRun, CollectorError> {
 fn clippy_missing(stderr: &str) -> bool {
     stderr.contains("no such command: `clippy`")
         || (stderr.contains("cargo-clippy") && stderr.contains("not installed"))
-}
-
-fn exit_description(exit_code: Option<i32>) -> String {
-    exit_code
-        .map(|code| format!("exit code {code}"))
-        .unwrap_or_else(|| "a signal".to_owned())
-}
-
-fn stderr_tail(stderr: &[u8]) -> String {
-    let stderr = String::from_utf8_lossy(stderr);
-    let lines: Vec<&str> = stderr.trim().lines().collect();
-    let start = lines.len().saturating_sub(STDERR_TAIL_LINES);
-    let tail = lines[start..].join("\n");
-
-    if tail.is_empty() {
-        "<no stderr output>".to_owned()
-    } else {
-        tail
-    }
 }

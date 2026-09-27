@@ -2,13 +2,14 @@
 name = "example"
 default_criticality = "B"
 
-# Collectors run by `code-gate collect`. Only Clippy is implemented so far;
-# enabling a scaffolded collector makes `collect` fail explicitly.
+# Collectors run by `code-gate collect`. `clippy` and `llvm_cov` are
+# implemented; enabling a scaffolded collector makes `collect` fail explicitly.
 [collectors.clippy]
 enabled = true
 
+# Requires cargo-llvm-cov (and llvm-tools-preview, or LLVM_COV/LLVM_PROFDATA).
 [collectors.llvm_cov]
-enabled = false
+enabled = true
 
 [collectors.audit]
 enabled = false

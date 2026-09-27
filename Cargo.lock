@@ -143,6 +143,9 @@ name = "code-gate-collector-llvm-cov"
 version = "0.1.0"
 dependencies = [
  "code-gate-core",
+ "code-gate-process",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

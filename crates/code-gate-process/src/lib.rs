@@ -67,6 +67,28 @@ impl ToolOutput {
     pub fn success(&self) -> bool {
         self.exit_code == Some(0)
     }
+
+    /// "exit code N" or "a signal", for error messages.
+    pub fn exit_description(&self) -> String {
+        self.exit_code
+            .map(|code| format!("exit code {code}"))
+            .unwrap_or_else(|| "a signal".to_owned())
+    }
+
+    /// The last `max_lines` lines of stderr, lossily decoded, for error
+    /// messages. Never empty.
+    pub fn stderr_tail(&self, max_lines: usize) -> String {
+        let stderr = String::from_utf8_lossy(&self.stderr);
+        let lines: Vec<&str> = stderr.trim().lines().collect();
+        let start = lines.len().saturating_sub(max_lines);
+        let tail = lines[start..].join("\n");
+
+        if tail.is_empty() {
+            "<no stderr output>".to_owned()
+        } else {
+            tail
+        }
+    }
 }
 
 pub trait ToolRunner {
@@ -162,6 +184,20 @@ mod tests {
 
         assert!(output.success());
         assert!(output.stdout.starts_with(b"cargo "));
+    }
+
+    #[test]
+    fn keeps_only_the_stderr_tail() {
+        let output = ToolOutput {
+            exit_code: Some(1),
+            stdout: Vec::new(),
+            stderr: b"one\ntwo\nthree\n".to_vec(),
+        };
+
+        assert_eq!(output.stderr_tail(2), "two\nthree");
+        assert_eq!(output.exit_description(), "exit code 1");
+        assert_eq!(ToolOutput::default().stderr_tail(2), "<no stderr output>");
+        assert_eq!(ToolOutput::default().exit_description(), "a signal");
     }
 
     #[test]

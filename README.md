@@ -118,10 +118,31 @@ Implemented:
 
   plus one finding per (deduplicated) diagnostic, with rule, severity,
   message, crate scope and source location when available.
+- **cargo-llvm-cov collector** — runs `cargo llvm-cov --workspace
+  --all-features --json --summary-only` and produces project-wide
+  percentages:
+
+  | Metric | Source | Scope |
+  |---|---|---|
+  | `test.coverage.lines` | cargo-llvm-cov | project |
+  | `test.coverage.functions` | cargo-llvm-cov | project |
+  | `test.coverage.regions` | cargo-llvm-cov | project |
+  | `test.coverage.branches` | cargo-llvm-cov | project (only when branch instrumentation is enabled) |
+
+  Requires [`cargo-llvm-cov`](https://github.com/taiki-e/cargo-llvm-cov) and
+  the LLVM tools: `rustup component add llvm-tools-preview`, or, on a
+  toolchain without rustup (e.g. distribution packages), point
+  `LLVM_COV` and `LLVM_PROFDATA` at an LLVM matching `rustc -vV`:
+
+  ```bash
+  export LLVM_COV=/usr/bin/llvm-cov LLVM_PROFDATA=/usr/bin/llvm-profdata
+  ```
+
+  A failing test suite makes `collect` exit `2`: coverage of a failing suite
+  is not measured.
 
 Scaffolded only (enabling them makes `collect` fail with exit code `2`):
 
-- `llvm_cov` (cargo-llvm-cov);
 - `audit` (cargo-audit);
 - `bca` (big-code-analysis).
 
