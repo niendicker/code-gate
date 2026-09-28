@@ -108,7 +108,8 @@ Implemented:
 - JSON report loader/writer;
 - CLI: `init`, `collect`, `check`, `version`;
 - **Clippy collector** — runs `cargo clippy --workspace --all-targets
-  --all-features --message-format=json` and produces:
+  --all-features --message-format=json` (feature selection configurable)
+  and produces:
 
   | Metric | Source | Scope |
   |---|---|---|
@@ -121,8 +122,8 @@ Implemented:
   plus one finding per (deduplicated) diagnostic, with rule, severity,
   message, crate scope and source location when available.
 - **cargo-llvm-cov collector** — runs `cargo llvm-cov --workspace
-  --all-features --json --summary-only` and produces project-wide
-  percentages:
+  --all-features --json --summary-only` (feature selection configurable)
+  and produces project-wide percentages:
 
   | Metric | Source | Scope |
   |---|---|---|
@@ -182,6 +183,19 @@ enabled = false
 
 Collectors are disabled unless explicitly enabled; unknown collector names are
 rejected.
+
+`clippy` and `llvm_cov` build the workspace with `--all-features` by default.
+For projects whose features cannot all be enabled together, choose the
+features per collector:
+
+```toml
+[collectors.llvm_cov]
+enabled = true
+features = "default"          # or "all", "none", or ["std", "serde"]
+# default_features = false    # only together with a list
+```
+
+See [ADR-0005](docs/adr/0005-cargo-feature-selection.md).
 
 ## Example policy
 

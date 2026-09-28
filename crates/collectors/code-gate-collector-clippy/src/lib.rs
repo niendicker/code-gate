@@ -8,7 +8,9 @@ mod parse;
 
 use std::path::Path;
 
-use code_gate_core::{CollectionContext, Collector, CollectorError, CollectorOutput};
+use code_gate_core::{
+    CargoFeatures, CollectionContext, Collector, CollectorError, CollectorOutput,
+};
 use code_gate_process::{Invocation, RunError, SystemRunner, ToolOutput, ToolRunner};
 
 pub use parse::{
@@ -22,6 +24,7 @@ const STDERR_TAIL_LINES: usize = 20;
 #[derive(Debug, Default)]
 pub struct ClippyCollector<R = SystemRunner> {
     runner: R,
+    features: CargoFeatures,
 }
 
 impl ClippyCollector {
@@ -32,23 +35,29 @@ impl ClippyCollector {
 
 impl<R: ToolRunner> ClippyCollector<R> {
     pub fn with_runner(runner: R) -> Self {
-        Self { runner }
+        Self {
+            runner,
+            features: CargoFeatures::default(),
+        }
+    }
+
+    /// Builds with `features` instead of `--all-features`.
+    pub fn with_features(mut self, features: CargoFeatures) -> Self {
+        self.features = features;
+        self
     }
 
     /// The exact command this collector runs in `workspace_root`.
-    pub fn invocation(workspace_root: &Path) -> Invocation {
-        Invocation::new("cargo", workspace_root).args([
-            "clippy",
-            "--workspace",
-            "--all-targets",
-            "--all-features",
-            "--message-format=json",
-        ])
+    pub fn invocation(workspace_root: &Path, features: &CargoFeatures) -> Invocation {
+        Invocation::new("cargo", workspace_root)
+            .args(["clippy", "--workspace", "--all-targets"])
+            .args(features.cargo_args())
+            .arg("--message-format=json")
     }
 
     /// Runs Clippy and returns its raw output, without interpreting it.
     pub fn execute_clippy(&self, workspace_root: &Path) -> Result<ToolOutput, CollectorError> {
-        let invocation = Self::invocation(workspace_root);
+        let invocation = Self::invocation(workspace_root, &self.features);
         self.runner.run(&invocation).map_err(|error| match error {
             RunError::NotFound { program } => CollectorError::ToolMissing(format!(
                 "`{program}` was not found on PATH; install a Rust toolchain"

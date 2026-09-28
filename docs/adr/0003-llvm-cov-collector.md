@@ -19,6 +19,9 @@ In the directory containing `quality.toml`:
 cargo llvm-cov --workspace --all-features --json --summary-only
 ```
 
+`--all-features` is the default feature selection; see
+[ADR-0005](0005-cargo-feature-selection.md).
+
 stdout is LLVM's `llvm.coverage.json.export` document; test output goes to
 stderr. Only `data[0].totals` is read. Exactly one export is required, and
 the `type` field, when present, must be `llvm.coverage.json.export`.

@@ -4,6 +4,8 @@ default_criticality = "B"
 
 # Collectors run by `code-gate collect`. `clippy`, `llvm_cov` and `audit` are
 # implemented; enabling a scaffolded collector makes `collect` fail explicitly.
+# `clippy` and `llvm_cov` build with --all-features unless `features` is set:
+# "all", "default", "none", or a list such as ["std", "serde"].
 [collectors.clippy]
 enabled = true
 

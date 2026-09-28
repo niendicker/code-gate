@@ -101,12 +101,12 @@ fn enabled_collectors(config: &CollectorsConfig) -> Vec<(&'static str, Box<dyn C
         (
             "clippy",
             config.clippy.enabled,
-            Box::new(ClippyCollector::new()),
+            Box::new(ClippyCollector::new().with_features(config.clippy.features.clone())),
         ),
         (
             "llvm_cov",
             config.llvm_cov.enabled,
-            Box::new(LlvmCovCollector::new()),
+            Box::new(LlvmCovCollector::new().with_features(config.llvm_cov.features.clone())),
         ),
         (
             "audit",
@@ -148,14 +148,17 @@ fn git(root: &Path, args: &[&str]) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use code_gate_config::CollectorConfig;
+    use code_gate_config::{CargoCollectorConfig, CollectorConfig};
 
     use super::*;
 
     #[test]
     fn only_enabled_collectors_run() {
         let config = CollectorsConfig {
-            clippy: CollectorConfig { enabled: true },
+            clippy: CargoCollectorConfig {
+                enabled: true,
+                ..CargoCollectorConfig::default()
+            },
             bca: CollectorConfig { enabled: true },
             ..CollectorsConfig::default()
         };

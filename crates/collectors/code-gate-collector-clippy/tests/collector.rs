@@ -3,7 +3,7 @@
 use std::{cell::RefCell, path::PathBuf};
 
 use code_gate_collector_clippy::ClippyCollector;
-use code_gate_core::{CollectionContext, Collector, CollectorError};
+use code_gate_core::{CargoFeatures, CollectionContext, Collector, CollectorError};
 use code_gate_process::{Invocation, RunError, ToolOutput, ToolRunner};
 
 enum Scripted {
@@ -160,4 +160,25 @@ fn non_utf8_output_is_parse_error() {
     let runner = FakeRunner::new(output(0, vec![0xff, 0xfe], ""));
 
     assert!(matches!(collect(&runner), Err(CollectorError::Parse(_))));
+}
+
+#[test]
+fn feature_selection_reaches_the_command_line() {
+    let runner = FakeRunner::new(output(0, fixture("clippy-clean.jsonl"), ""));
+    let context = CollectionContext {
+        workspace_root: PathBuf::from("/work/sample"),
+    };
+    ClippyCollector::with_runner(&runner)
+        .with_features(CargoFeatures::Selected {
+            default: false,
+            features: vec!["std".into(), "serde".into()],
+        })
+        .collect(&context)
+        .unwrap();
+
+    assert_eq!(
+        runner.invocations.borrow()[0].display(),
+        "cargo clippy --workspace --all-targets --no-default-features --features std,serde \
+         --message-format=json"
+    );
 }

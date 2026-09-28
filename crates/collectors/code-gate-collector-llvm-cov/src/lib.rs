@@ -8,7 +8,9 @@ mod parse;
 
 use std::path::Path;
 
-use code_gate_core::{CollectionContext, Collector, CollectorError, CollectorOutput};
+use code_gate_core::{
+    CargoFeatures, CollectionContext, Collector, CollectorError, CollectorOutput,
+};
 use code_gate_process::{Invocation, RunError, SystemRunner, ToolOutput, ToolRunner};
 
 pub use parse::{Counter, CoverageTotals, PROJECT_SCOPE, ParseError, parse_coverage_output};
@@ -19,6 +21,7 @@ const STDERR_TAIL_LINES: usize = 20;
 #[derive(Debug, Default)]
 pub struct LlvmCovCollector<R = SystemRunner> {
     runner: R,
+    features: CargoFeatures,
 }
 
 impl LlvmCovCollector {
@@ -29,24 +32,30 @@ impl LlvmCovCollector {
 
 impl<R: ToolRunner> LlvmCovCollector<R> {
     pub fn with_runner(runner: R) -> Self {
-        Self { runner }
+        Self {
+            runner,
+            features: CargoFeatures::default(),
+        }
+    }
+
+    /// Builds with `features` instead of `--all-features`.
+    pub fn with_features(mut self, features: CargoFeatures) -> Self {
+        self.features = features;
+        self
     }
 
     /// The exact command this collector runs in `workspace_root`.
-    pub fn invocation(workspace_root: &Path) -> Invocation {
-        Invocation::new("cargo", workspace_root).args([
-            "llvm-cov",
-            "--workspace",
-            "--all-features",
-            "--json",
-            "--summary-only",
-        ])
+    pub fn invocation(workspace_root: &Path, features: &CargoFeatures) -> Invocation {
+        Invocation::new("cargo", workspace_root)
+            .args(["llvm-cov", "--workspace"])
+            .args(features.cargo_args())
+            .args(["--json", "--summary-only"])
     }
 
     /// Runs the instrumented test suite and returns the raw output, without
     /// interpreting it.
     pub fn execute_llvm_cov(&self, workspace_root: &Path) -> Result<ToolOutput, CollectorError> {
-        let invocation = Self::invocation(workspace_root);
+        let invocation = Self::invocation(workspace_root, &self.features);
         self.runner.run(&invocation).map_err(|error| match error {
             RunError::NotFound { program } => CollectorError::ToolMissing(format!(
                 "`{program}` was not found on PATH; install a Rust toolchain"

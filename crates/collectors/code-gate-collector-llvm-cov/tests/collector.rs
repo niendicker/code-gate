@@ -3,7 +3,9 @@
 use std::path::PathBuf;
 
 use code_gate_collector_llvm_cov::LlvmCovCollector;
-use code_gate_core::{CollectionContext, Collector, CollectorError, CollectorOutput};
+use code_gate_core::{
+    CargoFeatures, CollectionContext, Collector, CollectorError, CollectorOutput,
+};
 use code_gate_process::{Invocation, RunError, ToolOutput, ToolRunner};
 
 struct FakeRunner(Option<ToolOutput>);
@@ -118,4 +120,37 @@ fn unparsable_output_is_parse_error() {
         run(0, b"not json".to_vec(), Vec::new()),
         Err(CollectorError::Parse(_))
     ));
+}
+
+/// Records the command line instead of running it.
+struct RecordingRunner(std::cell::RefCell<Option<String>>);
+
+impl ToolRunner for &RecordingRunner {
+    fn run(&self, invocation: &Invocation) -> Result<ToolOutput, RunError> {
+        *self.0.borrow_mut() = Some(invocation.display());
+        Err(RunError::NotFound {
+            program: "cargo".into(),
+        })
+    }
+}
+
+#[test]
+fn feature_selection_reaches_the_command_line() {
+    let runner = RecordingRunner(Default::default());
+    let context = CollectionContext {
+        workspace_root: PathBuf::from("/work/cov"),
+    };
+    let _ = LlvmCovCollector::with_runner(&runner)
+        .with_features(CargoFeatures::Selected {
+            default: false,
+            features: vec!["std".into(), "serde".into()],
+        })
+        .collect(&context);
+
+    assert_eq!(
+        runner.0.borrow().as_deref(),
+        Some(
+            "cargo llvm-cov --workspace --no-default-features --features std,serde --json --summary-only"
+        )
+    );
 }

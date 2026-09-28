@@ -19,6 +19,9 @@ The collector runs, in the directory containing `quality.toml`:
 cargo clippy --workspace --all-targets --all-features --message-format=json
 ```
 
+`--all-features` is the default feature selection; see
+[ADR-0005](0005-cargo-feature-selection.md).
+
 It consumes only Cargo's JSON messages on stdout, never the human-readable
 output.
 
