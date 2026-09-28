@@ -107,6 +107,15 @@ Examples:
 | `test.coverage.functions` | percent | cargo-llvm-cov | project | llvm_cov |
 | `test.coverage.regions` | percent | cargo-llvm-cov | project | llvm_cov |
 | `test.coverage.branches` | percent | cargo-llvm-cov | project | llvm_cov |
+| `security.vulnerabilities.total` | count | cargo-audit | project | audit |
+| `security.vulnerabilities.critical` | count | cargo-audit | project | audit |
+| `security.vulnerabilities.high` | count | cargo-audit | project | audit |
+| `security.vulnerabilities.medium` | count | cargo-audit | project | audit |
+| `security.vulnerabilities.low` | count | cargo-audit | project | audit |
+| `security.vulnerabilities.unknown` | count | cargo-audit | project | audit |
+| `dependency.unmaintained` | count | cargo-audit | project | audit |
+| `dependency.unsound` | count | cargo-audit | project | audit |
+| `dependency.yanked` | count | cargo-audit | project | audit |
 
 A diagnostic is a Clippy one when its lint code starts with `clippy::`;
 everything else rustc reports during the run is a compiler diagnostic.
@@ -117,6 +126,11 @@ Coverage percentages are `covered / count * 100` over LLVM's project totals.
 A coverage kind with nothing instrumented (typically branches on stable Rust)
 is omitted rather than reported as 0 % or 100 %. See
 [ADR-0003](adr/0003-llvm-cov-collector.md).
+
+Vulnerability severity is the CVSS qualitative rating of the advisory's
+vector; CVSS 0.0 counts as `low`, and an advisory without a scorable vector
+counts as `unknown`. The five severity buckets add up to `total`. See
+[ADR-0004](adr/0004-cargo-audit-collector.md).
 
 ## Stability
 

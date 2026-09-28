@@ -141,9 +141,28 @@ Implemented:
   A failing test suite makes `collect` exit `2`: coverage of a failing suite
   is not measured.
 
-Scaffolded only (enabling them makes `collect` fail with exit code `2`):
+- **cargo-audit collector** — runs `cargo audit --json` against `Cargo.lock`
+  and produces counts from the RustSec advisory database:
 
-- `audit` (cargo-audit);
+  | Metric | Source | Scope |
+  |---|---|---|
+  | `security.vulnerabilities.total` | cargo-audit | project |
+  | `security.vulnerabilities.{critical,high,medium,low}` | cargo-audit | project |
+  | `security.vulnerabilities.unknown` | cargo-audit | project |
+  | `dependency.unmaintained` | cargo-audit | project |
+  | `dependency.unsound` | cargo-audit | project |
+  | `dependency.yanked` | cargo-audit | project |
+
+  plus one finding per advisory hit. Severity comes from the advisory's CVSS
+  vector; advisories without one are counted as `unknown`, so gate on `total`
+  (or `unknown`) as well as `critical`. Finding vulnerabilities is evidence:
+  `collect` still exits `0`. Requires
+  [`cargo-audit`](https://github.com/rustsec/rustsec/tree/main/cargo-audit)
+  (`cargo install cargo-audit --locked` or your distribution's package) and
+  network access to fetch the advisory database.
+
+Scaffolded only (enabling it makes `collect` fail with exit code `2`):
+
 - `bca` (big-code-analysis).
 
 Collector configuration:
@@ -153,6 +172,9 @@ Collector configuration:
 enabled = true
 
 [collectors.llvm_cov]
+enabled = false
+
+[collectors.audit]
 enabled = false
 ```
 
@@ -167,6 +189,9 @@ name = "my-rust-project"
 default_criticality = "B"
 
 [collectors.clippy]
+enabled = true
+
+[collectors.audit]
 enabled = true
 
 [[gates]]
@@ -214,7 +239,8 @@ Exit codes:
 2  configuration, report, tooling or runtime error
 ```
 
-A tool that runs and reports problems (Clippy warnings, compile errors) is not
+A tool that runs and reports problems (Clippy warnings, compile errors,
+vulnerable dependencies) is not
 an error: `collect` records the evidence and exits `0`. Exit code `2` from
 `collect` means the evidence could not be gathered — tool missing, tool failed
 without diagnostics, unparsable output, or a scaffolded collector enabled — and

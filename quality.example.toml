@@ -2,7 +2,7 @@
 name = "example"
 default_criticality = "B"
 
-# Collectors run by `code-gate collect`. `clippy` and `llvm_cov` are
+# Collectors run by `code-gate collect`. `clippy`, `llvm_cov` and `audit` are
 # implemented; enabling a scaffolded collector makes `collect` fail explicitly.
 [collectors.clippy]
 enabled = true
@@ -11,8 +11,9 @@ enabled = true
 [collectors.llvm_cov]
 enabled = true
 
+# Requires cargo-audit and network access to the RustSec advisory database.
 [collectors.audit]
-enabled = false
+enabled = true
 
 [collectors.bca]
 enabled = false
@@ -51,4 +52,15 @@ scope = "project"
 operator = "lte"
 threshold = 0.0
 severity = "critical"
+missing = "fail"
+
+# Advisories without a CVSS vector are counted as `unknown`, not `critical`;
+# gate on them too so they cannot slip through unscored.
+[[gates]]
+id = "unscored-vulnerabilities"
+metric = "security.vulnerabilities.unknown"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "error"
 missing = "fail"

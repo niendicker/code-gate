@@ -8,3 +8,7 @@ repository.workspace = true
 
 [dependencies]
 code-gate-core = { path = "../../code-gate-core" }
+code-gate-process = { path = "../../code-gate-process" }
+cvss = "3"
+serde.workspace = true
+serde_json.workspace = true

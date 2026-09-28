@@ -10,6 +10,9 @@ enabled = true
 [collectors.llvm_cov]
 enabled = true
 
+[collectors.audit]
+enabled = true
+
 [[gates]]
 id = "no-clippy-warnings"
 metric = "code.clippy.warnings"
@@ -54,5 +57,34 @@ metric = "test.coverage.lines"
 scope = "project"
 operator = "gte"
 threshold = 75.0
+severity = "error"
+missing = "fail"
+
+# `total` rather than `critical`: any known vulnerability in the lockfile,
+# including unscored ones, blocks the gate.
+[[gates]]
+id = "no-vulnerable-dependencies"
+metric = "security.vulnerabilities.total"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "critical"
+missing = "fail"
+
+[[gates]]
+id = "no-unsound-dependencies"
+metric = "dependency.unsound"
+scope = "project"
+operator = "lte"
+threshold = 0.0
+severity = "error"
+missing = "fail"
+
+[[gates]]
+id = "no-yanked-dependencies"
+metric = "dependency.yanked"
+scope = "project"
+operator = "lte"
+threshold = 0.0
 severity = "error"
 missing = "fail"

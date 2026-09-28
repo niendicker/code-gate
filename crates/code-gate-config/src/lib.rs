@@ -78,7 +78,8 @@ mod tests {
 
         assert!(policy.collectors.clippy.enabled);
         assert!(policy.collectors.llvm_cov.enabled);
-        assert!(!policy.collectors.audit.enabled);
+        assert!(policy.collectors.audit.enabled);
+        assert!(!policy.collectors.bca.enabled);
         assert!(!policy.gates.is_empty());
     }
 

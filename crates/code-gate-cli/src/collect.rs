@@ -76,7 +76,7 @@ pub fn collect(config: PathBuf, output: PathBuf) -> Result<ExitCode> {
         );
         for metric in &collected.metrics {
             println!(
-                "      {:<28} {} ({})",
+                "      {:<34} {} ({})",
                 metric.id,
                 crate::format_value(metric.value),
                 metric.scope
@@ -108,7 +108,11 @@ fn enabled_collectors(config: &CollectorsConfig) -> Vec<(&'static str, Box<dyn C
             config.llvm_cov.enabled,
             Box::new(LlvmCovCollector::new()),
         ),
-        ("audit", config.audit.enabled, Box::new(AuditCollector)),
+        (
+            "audit",
+            config.audit.enabled,
+            Box::new(AuditCollector::new()),
+        ),
         ("bca", config.bca.enabled, Box::new(BcaCollector)),
     ];
 
