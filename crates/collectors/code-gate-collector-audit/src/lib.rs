@@ -58,6 +58,10 @@ impl<R: ToolRunner> Collector for AuditCollector<R> {
         "audit"
     }
 
+    fn command(&self, context: &CollectionContext) -> Option<String> {
+        Some(Self::invocation(&context.workspace_root).display())
+    }
+
     fn collect(&self, context: &CollectionContext) -> Result<CollectorOutput, CollectorError> {
         let output = self.execute_audit(&context.workspace_root)?;
         interpret(&output).map(|report| report.to_collector_output())

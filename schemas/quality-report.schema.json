@@ -34,6 +34,64 @@
       },
       "additionalProperties": false
     },
+    "collectors": {
+      "description": "How each collector produced its evidence. Absent from reports written before v0.1 recorded it.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The collector's [collectors.<name>] key."
+          },
+          "command": {
+            "type": "string",
+            "description": "Exact command line run in the project directory."
+          },
+          "features": {
+            "description": "Cargo feature selection, for collectors that build the workspace.",
+            "oneOf": [
+              {
+                "const": "all"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "selected"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "selected": {
+                    "type": "object",
+                    "required": [
+                      "default",
+                      "features"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "default": {
+                        "type": "boolean"
+                      },
+                      "features": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "metrics": {
       "type": "array",
       "items": {

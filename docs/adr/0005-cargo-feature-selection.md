@@ -42,5 +42,10 @@ configuration and the collectors, and maps a selection to Cargo flags.
 - Projects with incompatible features can be analyzed.
 - Clippy and coverage can use different selections, for example linting with
   all features while measuring coverage with the defaults.
-- The selection is not recorded in `quality.json` yet, so a report alone does
-  not say which feature set it measured; the policy file does.
+- The report records how its evidence was produced: `quality.json` has a
+  `collectors` array with, for each collector that ran, its `[collectors.*]`
+  key, the exact command line and, for Cargo-building collectors, the
+  feature selection (`"all"` or `{"selected": {"default": …, "features":
+  […]}}`). A report is therefore self-describing without the policy file.
+  Reports written before this field existed still load (it defaults to
+  empty), and `check` prints the recorded commands as `Evidence:` lines.

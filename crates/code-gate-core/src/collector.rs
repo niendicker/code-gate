@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::{Finding, Metric};
@@ -16,7 +17,11 @@ pub struct CollectorOutput {
 }
 
 /// Which Cargo features a collector builds the workspace with.
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+///
+/// Serialized in reports as `"all"` or
+/// `{"selected": {"default": true, "features": ["std"]}}`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CargoFeatures {
     /// `--all-features`.
     #[default]
@@ -50,6 +55,16 @@ impl CargoFeatures {
 
 pub trait Collector {
     fn name(&self) -> &'static str;
+
+    /// The exact command line this collector runs in `context`, recorded in
+    /// the report so the evidence can be reproduced. `None` for collectors
+    /// that do not run anything yet.
+    fn command(&self, context: &CollectionContext) -> Option<String>;
+
+    /// The Cargo feature selection, for collectors that build the workspace.
+    fn features(&self) -> Option<&CargoFeatures> {
+        None
+    }
 
     fn collect(&self, context: &CollectionContext) -> Result<CollectorOutput, CollectorError>;
 }
@@ -92,6 +107,23 @@ mod tests {
         assert_eq!(
             selected(false, &["std"]).cargo_args(),
             ["--no-default-features", "--features", "std"]
+        );
+    }
+
+    #[test]
+    fn serializes_features_for_reports() {
+        assert_eq!(
+            serde_json::to_string(&CargoFeatures::All).unwrap(),
+            r#""all""#
+        );
+        let json = r#"{"selected":{"default":false,"features":["std"]}}"#;
+        assert_eq!(
+            serde_json::to_string(&selected(false, &["std"])).unwrap(),
+            json
+        );
+        assert_eq!(
+            serde_json::from_str::<CargoFeatures>(json).unwrap(),
+            selected(false, &["std"])
         );
     }
 }

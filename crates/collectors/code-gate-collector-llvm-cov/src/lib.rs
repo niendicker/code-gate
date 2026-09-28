@@ -70,6 +70,14 @@ impl<R: ToolRunner> Collector for LlvmCovCollector<R> {
         "llvm-cov"
     }
 
+    fn command(&self, context: &CollectionContext) -> Option<String> {
+        Some(Self::invocation(&context.workspace_root, &self.features).display())
+    }
+
+    fn features(&self) -> Option<&CargoFeatures> {
+        Some(&self.features)
+    }
+
     fn collect(&self, context: &CollectionContext) -> Result<CollectorOutput, CollectorError> {
         let output = self.execute_llvm_cov(&context.workspace_root)?;
         interpret(&output).map(|totals| totals.to_collector_output())

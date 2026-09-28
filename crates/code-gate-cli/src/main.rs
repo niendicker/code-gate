@@ -90,6 +90,13 @@ fn check(config: PathBuf, report: PathBuf) -> Result<ExitCode> {
 
     println!("Code Gate");
     println!("Project: {}", quality_report.project.name);
+    for run in &quality_report.collectors {
+        println!(
+            "Evidence: {:<9} {}",
+            run.name,
+            run.command.as_deref().unwrap_or("<no command recorded>")
+        );
+    }
     println!();
 
     let mut failed = false;

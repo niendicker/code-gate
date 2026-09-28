@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::CargoFeatures;
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ProjectMetadata {
     pub name: String,
@@ -110,9 +112,25 @@ pub struct GateEvaluation {
     pub status: GateStatus,
 }
 
+/// How one collector produced its evidence: the audit trail of a report.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct CollectorRun {
+    /// The collector's `[collectors.<name>]` key.
+    pub name: String,
+    /// The exact command line that was run in the project directory.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub command: Option<String>,
+    /// The Cargo feature selection, for collectors that build the workspace.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub features: Option<CargoFeatures>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct QualityReport {
     pub project: ProjectMetadata,
+    /// Absent from reports written before collectors were recorded.
+    #[serde(default)]
+    pub collectors: Vec<CollectorRun>,
     #[serde(default)]
     pub metrics: Vec<Metric>,
     #[serde(default)]

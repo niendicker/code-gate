@@ -81,6 +81,9 @@ analyzes the Cargo project in that file's directory with every enabled
 collector, and writes the canonical report to `quality.json` (or `--output`).
 It does not judge the result: warnings found by a tool are evidence, and
 `collect` still exits `0`. `check` then evaluates the report against the gates.
+The report also records, under `collectors`, the exact command each collector
+ran and the Cargo features it built with, so the evidence can be reproduced
+from the report alone.
 
 This repository dogfoods itself with the root [`quality.toml`](quality.toml).
 

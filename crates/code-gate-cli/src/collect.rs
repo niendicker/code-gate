@@ -11,7 +11,7 @@ use code_gate_collector_clippy::ClippyCollector;
 use code_gate_collector_llvm_cov::LlvmCovCollector;
 use code_gate_config::{CollectorsConfig, load_policy};
 use code_gate_core::{
-    CollectionContext, Collector, CollectorError, ProjectMetadata, QualityReport,
+    CollectionContext, Collector, CollectorError, CollectorRun, ProjectMetadata, QualityReport,
 };
 use code_gate_process::{Invocation, SystemRunner, ToolRunner};
 use code_gate_report::write_report;
@@ -54,6 +54,7 @@ pub fn collect(config: PathBuf, output: PathBuf) -> Result<ExitCode> {
                 &["symbolic-ref", "--short", "--quiet", "HEAD"],
             ),
         },
+        collectors: Vec::new(),
         metrics: Vec::new(),
         findings: Vec::new(),
         gates: Vec::new(),
@@ -83,6 +84,9 @@ pub fn collect(config: PathBuf, output: PathBuf) -> Result<ExitCode> {
             );
         }
 
+        report
+            .collectors
+            .push(collector_run(key, collector.as_ref(), &context));
         report.metrics.extend(collected.metrics);
         report.findings.extend(collected.findings);
     }
@@ -93,6 +97,19 @@ pub fn collect(config: PathBuf, output: PathBuf) -> Result<ExitCode> {
     println!();
     println!("wrote {}", output.display());
     Ok(ExitCode::SUCCESS)
+}
+
+/// The audit-trail entry recording how `collector` produced its evidence.
+fn collector_run(
+    key: &str,
+    collector: &dyn Collector,
+    context: &CollectionContext,
+) -> CollectorRun {
+    CollectorRun {
+        name: key.to_owned(),
+        command: collector.command(context),
+        features: collector.features().cloned(),
+    }
 }
 
 /// Collectors in execution order, keyed by their `[collectors.<key>]` name.
@@ -149,6 +166,7 @@ fn git(root: &Path, args: &[&str]) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use code_gate_config::{CargoCollectorConfig, CollectorConfig};
+    use code_gate_core::CargoFeatures;
 
     use super::*;
 
@@ -168,6 +186,48 @@ mod tests {
             .map(|(key, _)| key)
             .collect();
         assert_eq!(keys, ["clippy", "bca"]);
+    }
+
+    #[test]
+    fn records_the_configured_features_and_command() {
+        let none = CargoFeatures::Selected {
+            default: false,
+            features: Vec::new(),
+        };
+        let config = CollectorsConfig {
+            llvm_cov: CargoCollectorConfig {
+                enabled: true,
+                features: none.clone(),
+            },
+            audit: CollectorConfig { enabled: true },
+            ..CollectorsConfig::default()
+        };
+        let context = CollectionContext {
+            workspace_root: PathBuf::from("/work"),
+        };
+
+        let runs: Vec<_> = enabled_collectors(&config)
+            .iter()
+            .map(|(key, collector)| collector_run(key, collector.as_ref(), &context))
+            .collect();
+        assert_eq!(
+            runs,
+            [
+                CollectorRun {
+                    name: "llvm_cov".into(),
+                    command: Some(
+                        "cargo llvm-cov --workspace --no-default-features --json --summary-only"
+                            .into()
+                    ),
+                    features: Some(none),
+                },
+                CollectorRun {
+                    name: "audit".into(),
+                    command: Some("cargo audit --json".into()),
+                    features: None,
+                },
+            ]
+        );
     }
 
     #[test]

@@ -8,6 +8,10 @@ impl Collector for BcaCollector {
         "bca"
     }
 
+    fn command(&self, _context: &CollectionContext) -> Option<String> {
+        None
+    }
+
     fn collect(&self, _context: &CollectionContext) -> Result<CollectorOutput, CollectorError> {
         Err(CollectorError::NotImplemented(
             "big-code-analysis collector is scaffolded but not wired yet".into(),
