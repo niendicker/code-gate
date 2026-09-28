@@ -1,5 +1,7 @@
 # Code Gate
 
+[![CI](https://github.com/niendicker/code-gate/actions/workflows/ci.yml/badge.svg)](https://github.com/niendicker/code-gate/actions/workflows/ci.yml)
+
 **Code Gate** is an open-source, tool-agnostic quality gate for Rust projects.
 
 It does **not** try to replace Clippy, LLVM coverage, `cargo-audit`, `bca`, mutation testing, or other analyzers. Instead, Code Gate provides the missing layer between them:
